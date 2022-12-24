@@ -35,6 +35,8 @@ namespace ZLL2.Unpacker
                 var lpEntryTableTemp = TPakStream.ReadBytes(m_Header.dwEntryTableCompressedSize);
                 var lpEntryTable = ZLIB.iDecompress(lpEntryTableTemp);
 
+                //File.WriteAllBytes("ENTRY_C3DPATCH", lpEntryTable);
+
                 TPakStream.Seek(m_Header.dwNamesTableOffset, SeekOrigin.Begin);
 
                 var lpNamesTableTemp = TPakStream.ReadBytes(m_Header.dwNamesTableCompressedSize);
@@ -53,7 +55,7 @@ namespace ZLL2.Unpacker
                             m_Entry.dwHash = TEntryReader.ReadUInt32();
                             m_Entry.dwCompressedSize1 = TEntryReader.ReadInt32();
                             m_Entry.dwDecompressedSize = TEntryReader.ReadInt32();
-                            m_Entry.dwUnknown1 = TEntryReader.ReadInt32();
+                            m_Entry.dwFlags = TEntryReader.ReadInt32();
                             m_Entry.dwCompressedSize2 = TEntryReader.ReadInt32();
                             m_Entry.dwUnknown2 = TEntryReader.ReadInt32();
                             m_Entry.m_FileName = TNamesReader.ReadString(Encoding.GetEncoding("gb2312"));
@@ -76,15 +78,20 @@ namespace ZLL2.Unpacker
 
                     TPakStream.Seek(m_Entry.dwOffset, SeekOrigin.Begin);
 
-                    if (m_Entry.dwCompressedSize1 == m_Entry.dwDecompressedSize)
+                    if (m_Entry.m_FileName == "level7")
                     {
-                        var lpBuffer = TPakStream.ReadBytes(m_Entry.dwDecompressedSize);
+                        Console.WriteLine();
+                    }
+
+                    if (m_Entry.dwFlags == 0x400)
+                    {
+                        var lpBuffer = TPakStream.ReadBytes(m_Entry.dwCompressedSize1);
                         File.WriteAllBytes(m_FullPath, lpBuffer);
                     }
                     else
                     {
                         var lpSrcBuffer = TPakStream.ReadBytes(m_Entry.dwCompressedSize1);
-                        var lpDstBuffer = LZ4.iDecompress(lpSrcBuffer, m_Entry.dwDecompressedSize);
+                        var lpDstBuffer = LZ4C.iDecompress(lpSrcBuffer, m_Entry.dwDecompressedSize);
 
                         File.WriteAllBytes(m_FullPath, lpDstBuffer);
                     }

@@ -5,13 +5,14 @@ namespace ZLL2.Unpacker
 {
     class Program
     {
+        //com.indie.zll2.google.kr
         private static String m_Title = "강림2:제천대성 PAK Unpacker";
 
         static void Main(String[] args)
         {
             Console.Title = m_Title;
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(m_Title);
+            Console.WriteLine("ZLL2 PAK Unpacker");
             Console.WriteLine("(c) 2022 Ekey (h4x0r) / v{0}\n", Utils.iGetApplicationVersion());
             Console.ResetColor();
 
